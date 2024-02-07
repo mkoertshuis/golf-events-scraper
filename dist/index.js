@@ -71,9 +71,9 @@ function saveData(filename, data) {
         encoding: 'utf8',
     });
 }
-function getData() {
+export function getData() {
     return __awaiter(this, void 0, void 0, function* () {
-        const document = yield fetchFromWebOrCache('http://delflandgolf.nl/activiteiten/', true);
+        const document = yield fetchFromWebOrCache('https://delflandgolf.nl/activiteiten/', true);
         const data = extractDataDelfland(document);
         saveData('delfland-activiteiten', data);
         return data;

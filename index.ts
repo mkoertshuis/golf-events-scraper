@@ -79,7 +79,7 @@ function saveData(filename: string, data: any) {
   });
 }
 
-async function getData() {
+export async function getData() {
   const document = await fetchFromWebOrCache(
     'https://delflandgolf.nl/activiteiten/',
     true,

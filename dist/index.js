@@ -7,9 +7,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { existsSync, mkdirSync } from 'fs';
-import { readFile, writeFile } from 'fs/promises';
-import { resolve } from 'path';
 import axios from 'axios';
 import { JSDOM } from 'jsdom';
 function fetchPage(url) {
@@ -23,29 +20,12 @@ function fetchPage(url) {
     });
     return HTMLData;
 }
-function fetchFromWebOrCache(url, ignoreCache = false) {
+function fetchFromWeb(url) {
     return __awaiter(this, void 0, void 0, function* () {
-        // If the cache folder doesn't exist, create it
-        if (!existsSync(resolve(__dirname, '.cache'))) {
-            mkdirSync('.cache');
-        }
         console.log(`Getting data for ${url}...`);
-        if (!ignoreCache &&
-            existsSync(resolve(__dirname, `.cache/${Buffer.from(url).toString('base64')}.html`))) {
-            console.log(`I read ${url} from cache`);
-            const HTMLData = yield readFile(resolve(__dirname, `.cache/${Buffer.from(url).toString('base64')}.html`), { encoding: 'utf8' });
-            const dom = new JSDOM(HTMLData);
-            return dom.window.document;
-        }
-        else {
-            console.log(`I fetched ${url} fresh`);
-            const HTMLData = yield fetchPage(url);
-            if (!ignoreCache && HTMLData) {
-                writeFile(resolve(__dirname, `.cache/${Buffer.from(url).toString('base64')}.html`), HTMLData, { encoding: 'utf8' });
-            }
-            const dom = new JSDOM(HTMLData);
-            return dom.window.document;
-        }
+        const HTMLData = yield fetchPage(url);
+        const dom = new JSDOM(HTMLData);
+        return dom.window.document;
     });
 }
 function extractDataDelfland(document) {
@@ -63,19 +43,10 @@ function extractDataDelfland(document) {
         };
     });
 }
-function saveData(filename, data) {
-    if (!existsSync(resolve(__dirname, 'data'))) {
-        mkdirSync('data');
-    }
-    writeFile(resolve(__dirname, `data/${filename}.json`), JSON.stringify(data), {
-        encoding: 'utf8',
-    });
-}
 export function getData() {
     return __awaiter(this, void 0, void 0, function* () {
-        const document = yield fetchFromWebOrCache('https://delflandgolf.nl/activiteiten/', true);
+        const document = yield fetchFromWeb('https://delflandgolf.nl/activiteiten/');
         const data = extractDataDelfland(document);
-        saveData('delfland-activiteiten', data);
         return data;
     });
 }

@@ -1,6 +1,3 @@
-import { existsSync, mkdirSync } from 'fs';
-import { readFile, writeFile } from 'fs/promises';
-import { resolve } from 'path';
 import axios, { AxiosError } from 'axios';
 import { JSDOM } from 'jsdom';
 
@@ -16,42 +13,12 @@ function fetchPage(url: string): Promise<string | undefined> {
   return HTMLData;
 }
 
-async function fetchFromWebOrCache(url: string, ignoreCache = false) {
-  // If the cache folder doesn't exist, create it
-  if (!existsSync(resolve(__dirname, '.cache'))) {
-    mkdirSync('.cache');
-  }
-  console.log(`Getting data for ${url}...`);
-  if (
-    !ignoreCache &&
-    existsSync(
-      resolve(__dirname, `.cache/${Buffer.from(url).toString('base64')}.html`),
-    )
-  ) {
-    console.log(`I read ${url} from cache`);
-    const HTMLData = await readFile(
-      resolve(__dirname, `.cache/${Buffer.from(url).toString('base64')}.html`),
-      { encoding: 'utf8' },
-    );
-    const dom = new JSDOM(HTMLData);
-    return dom.window.document;
-  } else {
-    console.log(`I fetched ${url} fresh`);
+async function fetchFromWeb(url: string) {
+    console.log(`Getting data for ${url}...`);
     const HTMLData = await fetchPage(url);
-    if (!ignoreCache && HTMLData) {
-      writeFile(
-        resolve(
-          __dirname,
-          `.cache/${Buffer.from(url).toString('base64')}.html`,
-        ),
-        HTMLData,
-        { encoding: 'utf8' },
-      );
-    }
     const dom = new JSDOM(HTMLData);
     return dom.window.document;
-  }
-}
+    }
 
 function extractDataDelfland(document: Document) {
     const calendarItems: HTMLAnchorElement[] = Array.from(
@@ -70,22 +37,11 @@ function extractDataDelfland(document: Document) {
     });
 }
 
-function saveData(filename: string, data: any) {
-  if (!existsSync(resolve(__dirname, 'data'))) {
-    mkdirSync('data');
-  }
-  writeFile(resolve(__dirname, `data/${filename}.json`), JSON.stringify(data), {
-    encoding: 'utf8',
-  });
-}
-
 export async function getData() {
-  const document = await fetchFromWebOrCache(
-    'https://delflandgolf.nl/activiteiten/',
-    true,
+  const document = await fetchFromWeb(
+    'https://delflandgolf.nl/activiteiten/'
   );
   const data = extractDataDelfland(document);
-  saveData('delfland-activiteiten', data);
   return data;
 }
 

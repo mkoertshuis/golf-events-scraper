@@ -86,6 +86,7 @@ async function getData() {
   );
   const data = extractDataDelfland(document);
   saveData('delfland-activiteiten', data);
+  return data;
 }
 
-getData();
+// getData();

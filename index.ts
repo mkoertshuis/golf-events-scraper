@@ -62,9 +62,9 @@ function extractDataDelfland(document: Document) {
         var pullLeft = block?.querySelector('div.pull-left');
         var detailHolder = block?.querySelector('div.detail-holder');
         return {
-            date: pullLeft?.querySelector('time'),
-            name: detailHolder?.querySelector('a')?.querySelector('h3'),
-            description: detailHolder?.querySelector('p'),
+            date: pullLeft?.querySelector('time')?.dateTime,
+            name: detailHolder?.querySelector('a')?.querySelector('h3')?.innerHTML,
+            description: detailHolder?.querySelector('p')?.innerHTML,
             url: detailHolder?.querySelector('a')?.href,
         };
     });

@@ -1,13 +1,10 @@
 {
-    "compilerOptions": {
-      "allowJs": true,            
-      "checkJs": true,
-      "outDir": "dist",
-      "sourceMap": true,
-      "target": "ES6",
-      "noImplicitAny": false,
-      "noImplicitReturns": true,
-      "strict": true,
-      "moduleResolution": "node",
-    }
-  }
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "target": "es5",
+    "allowJs": true
+  },
+  "files": ["src/index.ts"]
+}
